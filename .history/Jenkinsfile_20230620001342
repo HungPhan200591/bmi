@@ -10,17 +10,8 @@ node {
       mvnHome = tool 'maven-3.8.7'
     }
 
-    stage('Build Project') {
-      // build project via maven
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
-    }
-
-    stage('Build Docker Image') {
-      // build docker image
-      sh "whoami"
-      sh "ls -all /var/run/docker.sock"
-      sh "mv ./target/bmi.jar ./data" 
-      
-      dockerImage = docker.build("bmi")
+    stage("Tests and Deployment") {
+        sh "chmod +x mvnw"
+        sh 'nohup ./mvnw spring-boot:run -Dserver.port=8000 &'
     }
 }
