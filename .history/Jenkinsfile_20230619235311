@@ -9,7 +9,7 @@ node {
     }
 
     stage("Tests and Deployment") {
-        sh "chmod +x mvnw"
+
         sh 'nohup ./mvnw spring-boot:run -Dserver.port=8000 &'
     }
 }
