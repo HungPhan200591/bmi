@@ -1,5 +1,4 @@
 FROM maven:3.8.3-jdk-11-slim AS build
-RUN chmod +x mvnw
 
 WORKDIR /project
 
@@ -12,8 +11,10 @@ RUN mvn package
 
 FROM adoptopenjdk/openjdk11:jre-11.0.15_10-alpine
 
+RUN chmod +x mvnw
+
 RUN mkdir /app
 
 COPY --from=build /project/target/bmi-1.0.jar /app/bmi.jar
 
-CMD ["java","-jar","/app/bmi.jar"]
+CMD ["java","-jar","/app/spring-petclinic-1.5.1.jar"]

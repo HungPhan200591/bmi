@@ -1,5 +1,4 @@
 FROM maven:3.8.3-jdk-11-slim AS build
-RUN chmod +x mvnw
 
 WORKDIR /project
 
