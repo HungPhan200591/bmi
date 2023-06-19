@@ -1,6 +1,6 @@
 node {
     stage("Clone the project") {
-    git branch: 'test', url: 'https://github.com/HungPhan200591/bmi.git'
+    git branch: 'test', url: 'https://github.com/nkchauhan003/jenkins-demo.git'
     }
 
     stage("Compilation") {
