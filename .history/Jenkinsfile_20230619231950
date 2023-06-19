@@ -6,7 +6,7 @@
 	  stage("Deployment") {
 
 	    stage("Deployment") {
-	      sh 'nohup mvn spring-boot:run'
+	      sh 'nohup mvn spring-boot:run -Dserver.port=8000 &'
 	    }
 	  }
 	}
