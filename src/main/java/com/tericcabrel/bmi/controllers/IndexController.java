@@ -66,7 +66,7 @@ public class IndexController {
         SmbFileInputStream is = null;
         FileOutputStream os = null;
         //
-        String souFileUrl = "smb://root:123456@192.168.181.1/share-test/test.txt";
+        String souFileUrl = "smb://root:123456@192.168.181.1/test-share/test.txt";
 
         SmbFile souSmbFile = new SmbFile(souFileUrl);
         is = new SmbFileInputStream(souSmbFile);
@@ -91,7 +91,10 @@ public class IndexController {
 //                "userName", "password"));
 
 //        String souFileUrl = "smb://root:123456@192.168.181.1/share-test/test.txt";
-        SmbFile f = new SmbFile("smb:\\\\192.168.181.1\\share-test");
+
+
+
+        SmbFile f = new SmbFile("smb:\\\\192.168.181.1\\test-share");
 
         if (f.exists()) {
             for (SmbFile file : f.listFiles()) {
