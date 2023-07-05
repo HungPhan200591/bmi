@@ -2,6 +2,8 @@ package com.tericcabrel.bmi.controllers;
 
 import com.tericcabrel.bmi.dtos.ResultDto;
 import com.tericcabrel.bmi.dtos.UserInfoDto;
+import jcifs.CIFSContext;
+import jcifs.context.SingletonContext;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
@@ -86,12 +88,6 @@ public class IndexController {
     @GetMapping("/smb2")
     public String shareFile2() throws Exception {
 
-//        CIFSContext base = SingletonContext.getInstance();
-//        CIFSContext authed1 = base.withCredentials(new NtlmPasswordAuthentication(base, "domainName",
-//                "userName", "password"));
-
-//        String souFileUrl = "smb://root:123456@192.168.181.1/share-test/test.txt";
-
         SmbFile f = new SmbFile("smb://192.168.181.1/test-share");
 
         if (f.exists()) {
@@ -101,6 +97,24 @@ public class IndexController {
         } else {
             System.out.println("============== ERROR ==========");
         }
+
+
+        return "index";
+    }
+
+    @GetMapping("/smb3")
+    public String shareFile3() throws Exception {
+
+        String url = "smb://192.168.181.1/test-share/";
+        NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(null, "root", "123456");
+        SmbFile dir = new SmbFile(url, auth);
+
+        for (SmbFile f : dir.listFiles()) {
+            System.out.println(f.getName());
+        }
+
+        System.out.println("============== ERROR ==========");
+
 
 
         return "index";
