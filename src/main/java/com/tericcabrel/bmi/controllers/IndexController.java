@@ -92,9 +92,7 @@ public class IndexController {
 
 //        String souFileUrl = "smb://root:123456@192.168.181.1/share-test/test.txt";
 
-
-
-        SmbFile f = new SmbFile("smb:\\\\192.168.181.1\\test-share");
+        SmbFile f = new SmbFile("smb://192.168.181.1/test-share");
 
         if (f.exists()) {
             for (SmbFile file : f.listFiles()) {
