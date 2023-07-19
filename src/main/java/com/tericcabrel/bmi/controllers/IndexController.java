@@ -105,8 +105,6 @@ public class IndexController {
             SmbFileOutputStream smbFileOutputStream = new SmbFileOutputStream(smbFile);
             smbFileOutputStream.write(Files.readAllBytes(Paths.get(filePath)));
             System.out.println("Success");
-        } catch (Exception e) {
-            System.out.println("exception");
         }
 
         return ResponseEntity.ok("Ok");
