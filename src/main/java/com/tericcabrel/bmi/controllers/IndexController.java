@@ -8,6 +8,7 @@ import jcifs.context.SingletonContext;
 
 import jcifs.smb.NtlmPasswordAuthenticator;
 import jcifs.smb.SmbFile;
+import jcifs.smb.SmbFileOutputStream;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,28 +63,7 @@ public class IndexController {
 
         return  bmiRounded / 10;
     }
-//
-//    @GetMapping("/smb")
-//    public String shareFile() throws IOException {
-//        SmbFileInputStream is = null;
-//        FileOutputStream os = null;
-//        //
-//        String souFileUrl = "smb://root:123456@192.168.181.1/test-share/test.txt";
-//
-//        SmbFile souSmbFile = new SmbFile(souFileUrl);
-//        is = new SmbFileInputStream(souSmbFile);
-//        File tempOutFile = new java.io.File("/usr/local/test.txt");
-//        os = new FileOutputStream(tempOutFile);
-//        byte[] bytes = new byte[1024];
-//        int c;
-//        while ((c = is.read(bytes)) != -1) {
-//            os.write(bytes, 0, c);
-//        }
 
-//        SmbFile file = new SmbFile("smb://ADMIN/share-test");
-
-//        return "index";
-//    }
 
     @GetMapping("/smb")
     public ResponseEntity<List<String>> shareFile() {
@@ -93,9 +76,9 @@ public class IndexController {
 
         List<String> listFile = new ArrayList<>();
 
-        try (SmbFile f = new SmbFile(url, cifsContext)) {
+        try (SmbFile smbFile = new SmbFile(url, cifsContext)) {
 
-            for (SmbFile file : f.listFiles()) {
+            for (SmbFile file : smbFile.listFiles()) {
                 listFile.add(file.getName());
             }
 
@@ -104,6 +87,29 @@ public class IndexController {
         }
 
         return ResponseEntity.ok(listFile);
+    }
+
+    @GetMapping("/smb2")
+    public ResponseEntity<String> shareFile2() throws IOException {
+
+        String filePath = "/usr/local/src/test-smb.txt";
+//        String filePath = "E:/IT/Ubuntu/user_login.txt";
+        String url = "smb://192.168.181.1/test-share/test-smb.txt";
+
+        SingletonContext base = SingletonContext.getInstance();
+        Credentials auth = new NtlmPasswordAuthenticator(null,"admin", "186947873");
+        CIFSContext cifsContext = base.withCredentials(auth);
+
+        try (SmbFile smbFile = new SmbFile(url, cifsContext)) {
+            smbFile.createNewFile();
+            SmbFileOutputStream smbFileOutputStream = new SmbFileOutputStream(smbFile);
+            smbFileOutputStream.write(Files.readAllBytes(Paths.get(filePath)));
+            System.out.println("Success");
+        } catch (Exception e) {
+            System.out.println("exception");
+        }
+
+        return ResponseEntity.ok("Ok");
     }
 
 }
