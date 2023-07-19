@@ -3,11 +3,12 @@ package com.tericcabrel.bmi.controllers;
 import com.tericcabrel.bmi.dtos.ResultDto;
 import com.tericcabrel.bmi.dtos.UserInfoDto;
 import jcifs.CIFSContext;
+import jcifs.Credentials;
 import jcifs.context.SingletonContext;
-import jcifs.smb.NtlmPasswordAuthentication;
-import jcifs.smb.SmbException;
+
+import jcifs.smb.NtlmPasswordAuthenticator;
 import jcifs.smb.SmbFile;
-import jcifs.smb.SmbFileInputStream;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,12 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping
@@ -62,61 +59,51 @@ public class IndexController {
 
         return  bmiRounded / 10;
     }
-
-    @GetMapping("/smb")
-    public String shareFile() throws IOException {
-        SmbFileInputStream is = null;
-        FileOutputStream os = null;
-        //
-        String souFileUrl = "smb://root:123456@192.168.181.1/test-share/test.txt";
-
-        SmbFile souSmbFile = new SmbFile(souFileUrl);
-        is = new SmbFileInputStream(souSmbFile);
-        File tempOutFile = new java.io.File("/usr/local/test.txt");
-        os = new FileOutputStream(tempOutFile);
-        byte[] bytes = new byte[1024];
-        int c;
-        while ((c = is.read(bytes)) != -1) {
-            os.write(bytes, 0, c);
-        }
+//
+//    @GetMapping("/smb")
+//    public String shareFile() throws IOException {
+//        SmbFileInputStream is = null;
+//        FileOutputStream os = null;
+//        //
+//        String souFileUrl = "smb://root:123456@192.168.181.1/test-share/test.txt";
+//
+//        SmbFile souSmbFile = new SmbFile(souFileUrl);
+//        is = new SmbFileInputStream(souSmbFile);
+//        File tempOutFile = new java.io.File("/usr/local/test.txt");
+//        os = new FileOutputStream(tempOutFile);
+//        byte[] bytes = new byte[1024];
+//        int c;
+//        while ((c = is.read(bytes)) != -1) {
+//            os.write(bytes, 0, c);
+//        }
 
 //        SmbFile file = new SmbFile("smb://ADMIN/share-test");
 
-        return "index";
-    }
+//        return "index";
+//    }
 
-    @GetMapping("/smb2")
-    public String shareFile2() throws Exception {
+    @GetMapping("/smb")
+    public ResponseEntity<List<String>> shareFile() {
 
-        SmbFile f = new SmbFile("smb://192.168.181.1/test-share");
+        String url = "smb://192.168.181.1/test-share";
 
-        if (f.exists()) {
+        SingletonContext base = SingletonContext.getInstance();
+        Credentials auth = new NtlmPasswordAuthenticator(null,"admin", "186947873");
+        CIFSContext cifsContext = base.withCredentials(auth);
+
+        List<String> listFile = new ArrayList<>();
+
+        try (SmbFile f = new SmbFile(url, cifsContext)) {
+
             for (SmbFile file : f.listFiles()) {
-                System.out.println(file.getName());
+                listFile.add(file.getName());
             }
-        } else {
-            System.out.println("============== ERROR ==========");
+
+        } catch (Exception e) {
+            System.out.println("exception");
         }
 
-
-        return "index";
+        return ResponseEntity.ok(listFile);
     }
 
-    @GetMapping("/smb3")
-    public String shareFile3() throws Exception {
-
-        String url = "smb://192.168.181.1/test-share/";
-        NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(null, "root", "123456");
-        SmbFile dir = new SmbFile(url, auth);
-
-        for (SmbFile f : dir.listFiles()) {
-            System.out.println(f.getName());
-        }
-
-        System.out.println("============== ERROR ==========");
-
-
-
-        return "index";
-    }
 }
