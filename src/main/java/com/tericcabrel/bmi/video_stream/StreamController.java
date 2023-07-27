@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -58,7 +59,30 @@ public class StreamController {
                 .body(new ByteArrayResource(targetArray));
     }
 
+    @GetMapping(value = "/smbfile", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<String> getfile() throws IOException {
 
+        String url = "smb://192.168.1.131/sambashare/a.txt";
+
+        SingletonContext base = SingletonContext.getInstance();
+        Credentials auth = new NtlmPasswordAuthenticator(null,"phanhung", "123456");
+        CIFSContext cifsContext = base.withCredentials(auth);
+
+        String base64 = "aaa";
+
+        try (SmbFile smbFile = new SmbFile(url, cifsContext)) {
+
+            InputStream inputStream = smbFile.getInputStream();
+            byte[] fileData = IOUtils.toByteArray(inputStream);
+            base64 = Base64.getEncoder().encodeToString(fileData);
+
+        } catch (Exception e) {
+            System.out.println("exception");
+        }
+
+
+        return ResponseEntity.ok(base64);
+    }
 
 
 }
