@@ -1,9 +1,6 @@
 # Maven build container 
 
 FROM maven:3.8.3-openjdk-11 AS build
-RUN mkdir -p /root/.m2
-COPY .m2 /root/.m2
-
 WORKDIR /project
 COPY pom.xml .
 
